@@ -1,32 +1,78 @@
 import { LoguxNotFoundError } from '@logux/actions'
 import type { BaseServer } from '@logux/server'
-import { addSyncMap } from '@logux/server'
 
-import type { Player } from '../../api/index.js'
-import { createPlayer, deletePlayer, findPlayer, updatePlayer } from '../db.js'
-
-const modelName = 'players'
+import {
+  createPlayer,
+  deletePlayer,
+  findPlayer,
+  getPlayersPage,
+  updatePlayer
+} from '../db.js'
 
 export default (server: BaseServer): void => {
-  addSyncMap<Player>(server, modelName, {
+  server.channel('players', {
+    access() {
+      return true
+    },
+    async load() {
+      const playersPage = await getPlayersPage(1)
+      return {
+        payload: playersPage,
+        type: 'players/pageLoaded'
+      }
+    }
+  })
+
+  server.type('players/loadPage', {
     async access() {
       return true
     },
+    async process(ctx, action) {
+      const playersPage = await getPlayersPage(action.payload.page)
+      await ctx.sendBack({
+        payload: playersPage,
+        type: 'players/pageLoaded'
+      })
+    }
+  })
 
-    async change(ctx, id, fields) {
-      const player = await findPlayer(id)
+  server.type('players/create', {
+    async access() {
+      return true
+    },
+    async process(ctx, action) {
+      await createPlayer(action.payload)
+    },
+    resend() {
+      return 'players'
+    }
+  })
+
+  server.type('players/update', {
+    async access() {
+      return true
+    },
+    async process(ctx, action) {
+      const player = await findPlayer(action.payload.id)
 
       if (!player) throw new LoguxNotFoundError()
 
-      await updatePlayer({ id, ...fields })
+      await updatePlayer(action.payload)
     },
+    resend() {
+      return 'players'
+    }
+  })
 
-    async create(ctx, id, fields) {
-      await createPlayer(fields)
+  server.type('players/delete', {
+    async access() {
+      return true
     },
-
-    async delete(ctx, id) {
-      await deletePlayer(id)
+    async process(ctx, action) {
+      await deletePlayer(action.payload.id)
+    },
+    resend() {
+      return 'players'
     }
   })
 }

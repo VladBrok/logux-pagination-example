@@ -1,11 +1,47 @@
+import { useClient } from '@logux/client/react'
 import cn from 'classnames'
-import { useState } from 'react'
+import type { Unsubscribe } from 'nanoevents'
+import { useEffect, useState } from 'react'
+
+import type { Player, PlayersPageResponse } from '../../api'
 
 import styles from './App.module.css'
 
 function App(): JSX.Element {
+  const [players, setPlayers] = useState<Player[]>([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const client = useClient()
+
+  useEffect(() => {
+    const sub: Unsubscribe[] = []
+
+    sub.push(
+      // TODO: use createAction (typescript fsa?)
+      client.type<{ payload: PlayersPageResponse; type: string }>(
+        'players/pageLoaded',
+        action => {
+          setPlayers(action.payload.players)
+          setPage(action.payload.page)
+          setTotalPages(action.payload.totalPages)
+        }
+      )
+    )
+
+    // TODO: show loader
+    client.sync({
+      channel: 'players',
+      type: 'logux/subscribe'
+    })
+
+    return () => {
+      client.sync({
+        channel: 'players',
+        type: 'logux/unsubscribe'
+      })
+      sub.forEach(unsubscribe => unsubscribe())
+    }
+  }, [])
 
   return (
     <div className={styles.container}>
@@ -48,17 +84,19 @@ function App(): JSX.Element {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className={styles.tableCell}>omg</td>
-                <td className={styles.tableCell}>omg</td>
-                <td className={styles.tableCell}>omg</td>
-                <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
-                  <div className={styles.rowOptions}>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                  </div>
-                </td>
-              </tr>
+              {players.map(player => (
+                <tr key={player.id}>
+                  <td className={styles.tableCell}>{player.id}</td>
+                  <td className={styles.tableCell}>{player.name}</td>
+                  <td className={styles.tableCell}>{player.rank}</td>
+                  <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
+                    <div className={styles.rowOptions}>
+                      <button>Edit</button>
+                      <button>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
