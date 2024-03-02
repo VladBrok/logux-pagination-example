@@ -1,8 +1,12 @@
 import cn from 'classnames'
+import { useState } from 'react'
 
 import styles from './App.module.css'
 
 function App(): JSX.Element {
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -32,7 +36,7 @@ function App(): JSX.Element {
       </div>
 
       <div className={styles.content}>
-        <h2>Top Players</h2>
+        <h2 className={styles.tableTitle}>Top Players</h2>
         <div>
           <table className={styles.table}>
             <thead>
@@ -57,6 +61,26 @@ function App(): JSX.Element {
               </tr>
             </tbody>
           </table>
+
+          <div className={styles.paginationContainer}>
+            <button
+              className={styles.paginationButton}
+              disabled={page === 1}
+              title="Go to previous page"
+            >
+              &lt;
+            </button>
+            <div>
+              Page {page} of {totalPages}
+            </div>
+            <button
+              className={styles.paginationButton}
+              disabled={page === totalPages}
+              title="Go to next page"
+            >
+              &gt;
+            </button>
+          </div>
         </div>
       </div>
     </div>
