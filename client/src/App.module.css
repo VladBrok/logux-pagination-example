@@ -24,3 +24,31 @@
   flex-direction: column;
   gap: 0.7rem;
 }
+
+.content {
+  margin: 0 auto;
+  max-width: 500px;
+  text-align: center;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.table-header-cell,
+.table-cell {
+  border: 1px solid black;
+  padding: 0.5rem;
+}
+
+.row-options {
+  display: flex;
+  gap: 0.8rem;
+  width: fit-content;
+}
+
+.table-options-cell {
+  width: 1%;
+}

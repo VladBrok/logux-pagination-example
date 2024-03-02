@@ -1,3 +1,5 @@
+import cn from 'classnames'
+
 import styles from './App.module.css'
 
 function App(): JSX.Element {
@@ -26,6 +28,35 @@ function App(): JSX.Element {
               </li>
             </ol>
           </div>
+        </div>
+      </div>
+
+      <div className={styles.content}>
+        <h2>Top Players</h2>
+        <div>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.tableHeaderCell}>ID</th>
+                <th className={styles.tableHeaderCell}>Name</th>
+                <th className={styles.tableHeaderCell}>Rank</th>
+                <th className={styles.tableHeaderCell}></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className={styles.tableCell}>omg</td>
+                <td className={styles.tableCell}>omg</td>
+                <td className={styles.tableCell}>omg</td>
+                <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
+                  <div className={styles.rowOptions}>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
