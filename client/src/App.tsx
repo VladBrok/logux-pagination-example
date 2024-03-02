@@ -43,6 +43,30 @@ function App(): JSX.Element {
     }
   }, [])
 
+  const prevPage = (): void => {
+    if (page <= 1) {
+      return
+    }
+    updatePage(page - 1)
+  }
+
+  const nextPage = (): void => {
+    if (page >= totalPages) {
+      return
+    }
+    updatePage(page + 1)
+  }
+
+  const updatePage = (newPage: number): void => {
+    // TODO: show loader (maybe until /pageLoaded fires or maybe just using `sync`)
+    client.sync({
+      payload: {
+        page: newPage
+      },
+      type: 'players/loadPage'
+    })
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -104,6 +128,7 @@ function App(): JSX.Element {
             <button
               className={styles.paginationButton}
               disabled={page === 1}
+              onClick={prevPage}
               title="Go to previous page"
             >
               &lt;
@@ -114,6 +139,7 @@ function App(): JSX.Element {
             <button
               className={styles.paginationButton}
               disabled={page === totalPages}
+              onClick={nextPage}
               title="Go to next page"
             >
               &gt;

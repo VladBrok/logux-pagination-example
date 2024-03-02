@@ -39,7 +39,10 @@ export function updatePlayer(player: Partial<Player>): Promise<Player> {
 export function getPlayersPage(page: number): Promise<PlayersPageResponse> {
   return Promise.resolve({
     page,
-    players: players.slice((page - 1) * PER_PAGE, PER_PAGE),
+    players: players.slice(
+      (page - 1) * PER_PAGE,
+      (page - 1) * PER_PAGE + PER_PAGE
+    ),
     totalPages: Math.ceil(players.length / PER_PAGE)
   })
 }
