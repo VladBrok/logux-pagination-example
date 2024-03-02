@@ -1,0 +1,22 @@
+{
+  "name": "logux-pagination-example",
+  "private": true,
+  "scripts": {
+    "start": "pnpm -r start",
+    "test": "pnpm -r --include-workspace-root lint",
+    "lint": "tsc --noEmit && eslint ."
+  },
+  "type": "module",
+  "devDependencies": {
+    "@logux/eslint-config": "^52.0.2",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-prefer-let": "^3.0.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "typescript": "^5.3.3"
+  }
+}
