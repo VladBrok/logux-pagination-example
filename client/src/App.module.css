@@ -39,6 +39,12 @@
   font-size: 1rem;
 }
 
+.table-options {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
 .table-header-cell,
 .table-cell {
   border: 1px solid black;

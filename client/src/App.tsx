@@ -39,7 +39,9 @@ function App(): JSX.Element {
         channel: 'players',
         type: 'logux/unsubscribe'
       })
-      sub.forEach(unsubscribe => unsubscribe())
+      sub.forEach(unsubscribe => {
+        unsubscribe()
+      })
     }
   }, [])
 
@@ -97,6 +99,9 @@ function App(): JSX.Element {
 
       <div className={styles.content}>
         <h2 className={styles.tableTitle}>Top Players</h2>
+        <div className={styles.tableOptions}>
+          <button>Add player</button>
+        </div>
         <div>
           <table className={styles.table}>
             <thead>
