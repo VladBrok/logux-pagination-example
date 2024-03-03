@@ -4,8 +4,14 @@ import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
 
-import type { Player, PlayersPageResponse } from '../../api'
-import { createPlayerAction, loadPlayersPageAction } from '../../api/actions.js'
+import type { Player } from '../../api'
+import {
+  createPlayerAction,
+  deletePlayerAction,
+  loadPlayersPageAction,
+  playersPageLoadedAction,
+  updatePlayerAction
+} from '../../api/actions.js'
 
 import styles from './App.module.css'
 
@@ -37,45 +43,28 @@ function App(): JSX.Element {
     const sub: Unsubscribe[] = []
 
     sub.push(
-      // TODO: use createAction (typescript fsa?)
-      client.type<{ payload: PlayersPageResponse; type: string }>(
-        'players/pageLoaded',
-        action => {
-          setPlayers(action.payload.players)
-          setPage(action.payload.page)
-          setTotalPages(action.payload.totalPages)
+      client.type(playersPageLoadedAction, action => {
+        setPlayers(action.payload.players)
+        setPage(action.payload.page)
+        setTotalPages(action.payload.totalPages)
 
-          if (action.payload.page > action.payload.totalPages) {
-            updatePage(action.payload.totalPages)
-          }
+        if (action.payload.page > action.payload.totalPages) {
+          updatePage(action.payload.totalPages)
         }
-      )
+      })
     )
 
     sub.push(
-      client.type<{ payload: Player; type: string }>(
-        'players/update',
-        action => {
-          setPlayers(data =>
-            data.map(x => (x.id === action.payload.id ? action.payload : x))
-          )
-        }
-      )
+      client.type(updatePlayerAction, action => {
+        setPlayers(data =>
+          data.map(x => (x.id === action.payload.id ? action.payload : x))
+        )
+      })
     )
 
-    sub.push(
-      client.type<{ payload: { id: string }; type: string }>(
-        'players/delete',
-        refreshPage
-      )
-    )
+    sub.push(client.type(deletePlayerAction, refreshPage))
 
-    sub.push(
-      client.type<{ payload: Player; type: string }>(
-        'players/create',
-        refreshPage
-      )
-    )
+    sub.push(client.type(createPlayerAction, refreshPage))
 
     return () => {
       sub.forEach(unsubscribe => {
@@ -120,12 +109,7 @@ function App(): JSX.Element {
   const deletePlayer =
     (player: Player): (() => void) =>
     (): void => {
-      client.sync({
-        payload: {
-          id: player.id
-        },
-        type: 'players/delete'
-      })
+      client.sync(deletePlayerAction({ id: player.id }))
     }
 
   const cancelEdit = (): void => {
@@ -133,16 +117,17 @@ function App(): JSX.Element {
   }
 
   const saveEdit = (): void => {
+    if (!editingPlayer) {
+      return
+    }
+
     setPlayers(data =>
       data.map(player =>
-        player.id === editingPlayer?.id ? editingPlayer : player
+        player.id === editingPlayer.id ? editingPlayer : player
       )
     )
     setEditingPlayer(undefined)
-    client.sync({
-      payload: editingPlayer,
-      type: 'players/update'
-    })
+    client.sync(updatePlayerAction(editingPlayer))
   }
 
   const add = (): void => {

@@ -1,7 +1,13 @@
 import { LoguxNotFoundError } from '@logux/actions'
 import type { BaseServer } from '@logux/server'
 
-import { createPlayerAction, loadPlayersPageAction } from '../../api/actions.js'
+import {
+  createPlayerAction,
+  deletePlayerAction,
+  loadPlayersPageAction,
+  playersPageLoadedAction,
+  updatePlayerAction
+} from '../../api/actions.js'
 import {
   createPlayer,
   deletePlayer,
@@ -17,10 +23,7 @@ export default (server: BaseServer): void => {
     },
     async load() {
       const playersPage = await getPlayersPage(1)
-      return {
-        payload: playersPage,
-        type: 'players/pageLoaded'
-      }
+      return playersPageLoadedAction(playersPage)
     }
   })
 
@@ -30,10 +33,7 @@ export default (server: BaseServer): void => {
     },
     async process(ctx, action) {
       const playersPage = await getPlayersPage(action.payload.page)
-      await ctx.sendBack({
-        payload: playersPage,
-        type: 'players/pageLoaded'
-      })
+      await ctx.sendBack(playersPageLoadedAction(playersPage))
     }
   })
 
@@ -49,7 +49,7 @@ export default (server: BaseServer): void => {
     }
   })
 
-  server.type('players/update', {
+  server.type(updatePlayerAction, {
     async access() {
       return true
     },
@@ -65,7 +65,7 @@ export default (server: BaseServer): void => {
     }
   })
 
-  server.type('players/delete', {
+  server.type(deletePlayerAction, {
     async access() {
       return true
     },
