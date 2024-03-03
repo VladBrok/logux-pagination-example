@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { useClient } from '@logux/client/react'
+import { parseId } from '@logux/core'
 import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
@@ -23,6 +24,9 @@ function App(): JSX.Element {
   const client = useClient()
   const [newPlayerAdded, setNewPlayerAdded] = useState<Player>()
   const [newPlayerAddedShown, setNewPlayerAddedShown] = useState(false)
+  const [updatingPlayersAnimation, setUpdatingPlayersAnimation] = useState<
+    string[]
+  >([])
   const addTimeoutId = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
@@ -55,10 +59,20 @@ function App(): JSX.Element {
     )
 
     sub.push(
-      client.type(updatePlayerAction, action => {
-        setPlayers(data =>
-          data.map(x => (x.id === action.payload.id ? action.payload : x))
-        )
+      client.type(updatePlayerAction, (action, meta) => {
+        if (client.clientId === parseId(meta.id).clientId) {
+          return
+        }
+
+        setUpdatingPlayersAnimation(prev => [...prev, action.payload.id])
+        setTimeout(() => {
+          setPlayers(data =>
+            data.map(x => (x.id === action.payload.id ? action.payload : x))
+          )
+          setUpdatingPlayersAnimation(prev =>
+            prev.filter(x => x !== action.payload.id)
+          )
+        }, 1000)
       })
     )
 
@@ -204,7 +218,16 @@ function App(): JSX.Element {
                 <tr key={player.id}>
                   <td className={styles.tableCell}>{player.id.slice(0, 6)}</td>
                   <td className={styles.tableCell}>
-                    {editingPlayer?.id !== player.id && player.name}
+                    {editingPlayer?.id !== player.id && (
+                      <span
+                        className={cn(styles.cellData, {
+                          [styles.cellDataFaded]:
+                            updatingPlayersAnimation.includes(player.id)
+                        })}
+                      >
+                        {player.name}
+                      </span>
+                    )}
                     {editingPlayer?.id === player.id && (
                       <input
                         className={styles.input}
@@ -220,7 +243,16 @@ function App(): JSX.Element {
                     )}
                   </td>
                   <td className={styles.tableCell}>
-                    {editingPlayer?.id !== player.id && player.rank}
+                    {editingPlayer?.id !== player.id && (
+                      <span
+                        className={cn(styles.cellData, {
+                          [styles.cellDataFaded]:
+                            updatingPlayersAnimation.includes(player.id)
+                        })}
+                      >
+                        {player.rank}
+                      </span>
+                    )}
                     {editingPlayer?.id === player.id && (
                       <input
                         className={styles.input}

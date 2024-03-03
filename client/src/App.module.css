@@ -123,3 +123,12 @@
 .table-title {
   margin-bottom: 2rem;
 }
+
+.cell-data {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.cell-data-faded {
+  opacity: 0;
+}
