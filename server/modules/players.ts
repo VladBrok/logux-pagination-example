@@ -1,6 +1,7 @@
 import { LoguxNotFoundError } from '@logux/actions'
 import type { BaseServer } from '@logux/server'
 
+import { loadPlayersPageAction } from '../../api/actions.js'
 import {
   createPlayer,
   deletePlayer,
@@ -23,7 +24,7 @@ export default (server: BaseServer): void => {
     }
   })
 
-  server.type('players/loadPage', {
+  server.type(loadPlayersPageAction, {
     async access() {
       return true
     },

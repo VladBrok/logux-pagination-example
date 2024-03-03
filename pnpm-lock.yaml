@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      typescript-fsa:
+        specifier: ^3.0.0
+        version: 3.0.0
     devDependencies:
       '@logux/eslint-config':
         specifier: ^52.0.2
@@ -3920,6 +3924,10 @@ packages:
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
     dev: true
+
+  /typescript-fsa@3.0.0:
+    resolution: {integrity: sha512-xiXAib35i0QHl/+wMobzPibjAH5TJLDj+qGq5jwVLG9qR4FUswZURBw2qihBm0m06tHoyb3FzpnJs1GRhRwVag==}
+    dev: false
 
   /typescript@5.3.3:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}

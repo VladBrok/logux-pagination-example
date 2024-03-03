@@ -5,6 +5,7 @@ import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
 
 import type { Player, PlayersPageResponse } from '../../api'
+import { loadPlayersPageAction } from '../../api/actions.js'
 
 import styles from './App.module.css'
 
@@ -99,12 +100,11 @@ function App(): JSX.Element {
 
   const updatePage = (newPage: number): void => {
     // TODO: show loader (maybe until /pageLoaded fires or maybe just using `sync`)
-    client.sync({
-      payload: {
+    client.sync(
+      loadPlayersPageAction({
         page: newPage
-      },
-      type: 'players/loadPage'
-    })
+      })
+    )
   }
 
   const refreshPage = (): void => {
