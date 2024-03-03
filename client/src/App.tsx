@@ -11,6 +11,7 @@ function App(): JSX.Element {
   const [players, setPlayers] = useState<Player[]>([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [editingPlayer, setEditingPlayer] = useState<Player>()
   const client = useClient()
 
   useEffect(() => {
@@ -24,6 +25,17 @@ function App(): JSX.Element {
           setPlayers(action.payload.players)
           setPage(action.payload.page)
           setTotalPages(action.payload.totalPages)
+        }
+      )
+    )
+
+    sub.push(
+      client.type<{ payload: Player; type: string }>(
+        'players/update',
+        action => {
+          setPlayers(data =>
+            data.map(x => (x.id === action.payload.id ? action.payload : x))
+          )
         }
       )
     )
@@ -66,6 +78,29 @@ function App(): JSX.Element {
         page: newPage
       },
       type: 'players/loadPage'
+    })
+  }
+
+  const edit =
+    (player: Player): (() => void) =>
+    (): void => {
+      setEditingPlayer(player)
+    }
+
+  const cancelEdit = (): void => {
+    setEditingPlayer(undefined)
+  }
+
+  const saveEdit = (): void => {
+    setPlayers(data =>
+      data.map(player =>
+        player.id === editingPlayer?.id ? editingPlayer : player
+      )
+    )
+    setEditingPlayer(undefined)
+    client.sync({
+      payload: editingPlayer,
+      type: 'players/update'
     })
   }
 
@@ -116,13 +151,51 @@ function App(): JSX.Element {
               {players.map(player => (
                 <tr key={player.id}>
                   <td className={styles.tableCell}>{player.id}</td>
-                  <td className={styles.tableCell}>{player.name}</td>
-                  <td className={styles.tableCell}>{player.rank}</td>
+                  <td className={styles.tableCell}>
+                    {editingPlayer?.id !== player.id && player.name}
+                    {editingPlayer?.id === player.id && (
+                      <input
+                        onChange={e => {
+                          setEditingPlayer({
+                            ...editingPlayer,
+                            name: e.target.value
+                          })
+                        }}
+                        type="text"
+                        value={editingPlayer.name}
+                      />
+                    )}
+                  </td>
+                  <td className={styles.tableCell}>
+                    {editingPlayer?.id !== player.id && player.rank}
+                    {editingPlayer?.id === player.id && (
+                      <input
+                        onChange={e => {
+                          setEditingPlayer({
+                            ...editingPlayer,
+                            rank: parseFloat(e.target.value)
+                          })
+                        }}
+                        type="number"
+                        value={editingPlayer.rank}
+                      />
+                    )}
+                  </td>
                   <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
                     <div className={styles.rowOptionsWrapper}>
                       <div className={styles.rowOptions}>
-                        <button>Edit</button>
-                        <button>Delete</button>
+                        {editingPlayer?.id !== player.id && (
+                          <>
+                            <button onClick={edit(player)}>Edit</button>
+                            <button>Delete</button>
+                          </>
+                        )}
+                        {editingPlayer?.id === player.id && (
+                          <>
+                            <button onClick={saveEdit}>Save</button>{' '}
+                            <button onClick={cancelEdit}>Cancel</button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </td>

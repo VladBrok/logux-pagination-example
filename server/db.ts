@@ -28,12 +28,12 @@ export function createPlayer(player: Player): Promise<Player> {
   return Promise.resolve(player)
 }
 
-export function updatePlayer(player: Partial<Player>): Promise<Player> {
+export function updatePlayer(player: Partial<Player>): Promise<void> {
   players = players.map(pl => {
     if (pl.id !== player.id) return pl
     return { ...pl, ...player }
   })
-  return Promise.resolve(players.find(pl => pl.id === player.id)!)
+  return Promise.resolve()
 }
 
 export function getPlayersPage(page: number): Promise<PlayersPageResponse> {
