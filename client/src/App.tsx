@@ -6,7 +6,7 @@ import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
 
-import type { Player } from '../../api'
+import { type Player } from '../../api'
 import {
   createPlayerAction,
   deletePlayerAction,
@@ -29,7 +29,25 @@ function App(): JSX.Element {
     string[]
   >([])
   const addTimeoutId = useRef<NodeJS.Timeout>()
-  const [animationParent] = useAutoAnimate()
+  const [animationParent] = useAutoAnimate((el, action) => {
+    let keyframes: Keyframe[] = []
+    if (action === 'add') {
+      keyframes = [
+        { opacity: 0, transform: 'translateX(20%)' },
+        { opacity: 1, transform: 'translateX(0)' }
+      ]
+    }
+    if (action === 'remove') {
+      keyframes = [
+        { opacity: 1, transform: 'translateX(0)' },
+        { opacity: 0, transform: 'translateX(20%)' }
+      ]
+    }
+    return new KeyframeEffect(el, keyframes, {
+      duration: 400,
+      easing: 'ease-in-out'
+    })
+  })
 
   useEffect(() => {
     client.sync({
@@ -78,9 +96,17 @@ function App(): JSX.Element {
       })
     )
 
-    sub.push(client.type(deletePlayerAction, refreshPage))
+    sub.push(
+      client.type(deletePlayerAction, () => {
+        refreshPage()
+      })
+    )
 
-    sub.push(client.type(createPlayerAction, refreshPage))
+    sub.push(
+      client.type(createPlayerAction, () => {
+        refreshPage()
+      })
+    )
 
     return () => {
       sub.forEach(unsubscribe => {
@@ -206,111 +232,117 @@ function App(): JSX.Element {
           </span>
         </div>
         <div>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.tableHeaderCell}>ID</th>
-                <th className={styles.tableHeaderCell}>Name</th>
-                <th className={styles.tableHeaderCell}>Rank</th>
-                <th className={styles.tableHeaderCell}></th>
-              </tr>
-            </thead>
-            <tbody ref={animationParent}>
-              {players.map(player => (
-                <tr key={player.id}>
-                  <td className={styles.tableCell}>{player.id.slice(0, 6)}</td>
-                  <td className={styles.tableCell}>
-                    {editingPlayer?.id !== player.id && (
-                      <span
-                        className={cn(styles.cellData, {
-                          [styles.cellDataFaded]:
-                            updatingPlayersAnimation.includes(player.id)
-                        })}
-                      >
-                        {player.name}
-                      </span>
-                    )}
-                    {editingPlayer?.id === player.id && (
-                      <input
-                        className={styles.input}
-                        onChange={e => {
-                          setEditingPlayer({
-                            ...editingPlayer,
-                            name: e.target.value
-                          })
-                        }}
-                        type="text"
-                        value={editingPlayer.name}
-                      />
-                    )}
-                  </td>
-                  <td className={styles.tableCell}>
-                    {editingPlayer?.id !== player.id && (
-                      <span
-                        className={cn(styles.cellData, {
-                          [styles.cellDataFaded]:
-                            updatingPlayersAnimation.includes(player.id)
-                        })}
-                      >
-                        {player.rank}
-                      </span>
-                    )}
-                    {editingPlayer?.id === player.id && (
-                      <input
-                        className={styles.input}
-                        onChange={e => {
-                          setEditingPlayer({
-                            ...editingPlayer,
-                            rank: parseFloat(e.target.value)
-                          })
-                        }}
-                        type="number"
-                        value={editingPlayer.rank}
-                      />
-                    )}
-                  </td>
-                  <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
-                    <div className={styles.rowOptionsWrapper}>
-                      <div className={styles.rowOptions}>
-                        {editingPlayer?.id !== player.id && (
-                          <>
-                            <button
-                              className={styles.button}
-                              onClick={edit(player)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className={styles.button}
-                              onClick={deletePlayer(player)}
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                        {editingPlayer?.id === player.id && (
-                          <>
-                            <button
-                              className={styles.button}
-                              onClick={saveEdit}
-                            >
-                              Save
-                            </button>{' '}
-                            <button
-                              className={styles.button}
-                              onClick={cancelEdit}
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </td>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr className={styles.tableRow}>
+                  <th className={styles.tableHeaderCell}>ID</th>
+                  <th className={styles.tableHeaderCell}>Name</th>
+                  <th className={styles.tableHeaderCell}>Rank</th>
+                  <th className={styles.tableHeaderCell}></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody ref={animationParent}>
+                {players.map(player => (
+                  <tr className={styles.tableRow} key={player.id}>
+                    <td className={styles.tableCell}>
+                      {player.id.slice(0, 6)}
+                    </td>
+                    <td className={styles.tableCell}>
+                      {editingPlayer?.id !== player.id && (
+                        <span
+                          className={cn(styles.cellData, {
+                            [styles.cellDataFaded]:
+                              updatingPlayersAnimation.includes(player.id)
+                          })}
+                        >
+                          {player.name}
+                        </span>
+                      )}
+                      {editingPlayer?.id === player.id && (
+                        <input
+                          className={styles.input}
+                          onChange={e => {
+                            setEditingPlayer({
+                              ...editingPlayer,
+                              name: e.target.value
+                            })
+                          }}
+                          type="text"
+                          value={editingPlayer.name}
+                        />
+                      )}
+                    </td>
+                    <td className={styles.tableCell}>
+                      {editingPlayer?.id !== player.id && (
+                        <span
+                          className={cn(styles.cellData, {
+                            [styles.cellDataFaded]:
+                              updatingPlayersAnimation.includes(player.id)
+                          })}
+                        >
+                          {player.rank}
+                        </span>
+                      )}
+                      {editingPlayer?.id === player.id && (
+                        <input
+                          className={styles.input}
+                          onChange={e => {
+                            setEditingPlayer({
+                              ...editingPlayer,
+                              rank: parseFloat(e.target.value)
+                            })
+                          }}
+                          type="number"
+                          value={editingPlayer.rank}
+                        />
+                      )}
+                    </td>
+                    <td
+                      className={cn(styles.tableCell, styles.tableOptionsCell)}
+                    >
+                      <div className={styles.rowOptionsWrapper}>
+                        <div className={styles.rowOptions}>
+                          {editingPlayer?.id !== player.id && (
+                            <>
+                              <button
+                                className={styles.button}
+                                onClick={edit(player)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className={styles.button}
+                                onClick={deletePlayer(player)}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {editingPlayer?.id === player.id && (
+                            <>
+                              <button
+                                className={styles.button}
+                                onClick={saveEdit}
+                              >
+                                Save
+                              </button>{' '}
+                              <button
+                                className={styles.button}
+                                onClick={cancelEdit}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className={styles.paginationContainer}>
             <button
