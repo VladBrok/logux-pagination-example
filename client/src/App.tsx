@@ -192,7 +192,9 @@ function App(): JSX.Element {
       <div className={styles.content}>
         <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
-          <button onClick={add}>Add random player</button>
+          <button className={styles.button} onClick={add}>
+            Add random player
+          </button>
           <span
             className={cn(styles.playerAdded, {
               [styles.playerAddedVisible]: newPlayerAddedShown
@@ -219,6 +221,7 @@ function App(): JSX.Element {
                     {editingPlayer?.id !== player.id && player.name}
                     {editingPlayer?.id === player.id && (
                       <input
+                        className={styles.input}
                         onChange={e => {
                           setEditingPlayer({
                             ...editingPlayer,
@@ -234,6 +237,7 @@ function App(): JSX.Element {
                     {editingPlayer?.id !== player.id && player.rank}
                     {editingPlayer?.id === player.id && (
                       <input
+                        className={styles.input}
                         onChange={e => {
                           setEditingPlayer({
                             ...editingPlayer,
@@ -250,16 +254,34 @@ function App(): JSX.Element {
                       <div className={styles.rowOptions}>
                         {editingPlayer?.id !== player.id && (
                           <>
-                            <button onClick={edit(player)}>Edit</button>
-                            <button onClick={deletePlayer(player)}>
+                            <button
+                              className={styles.button}
+                              onClick={edit(player)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className={styles.button}
+                              onClick={deletePlayer(player)}
+                            >
                               Delete
                             </button>
                           </>
                         )}
                         {editingPlayer?.id === player.id && (
                           <>
-                            <button onClick={saveEdit}>Save</button>{' '}
-                            <button onClick={cancelEdit}>Cancel</button>
+                            <button
+                              className={styles.button}
+                              onClick={saveEdit}
+                            >
+                              Save
+                            </button>{' '}
+                            <button
+                              className={styles.button}
+                              onClick={cancelEdit}
+                            >
+                              Cancel
+                            </button>
                           </>
                         )}
                       </div>
@@ -272,7 +294,7 @@ function App(): JSX.Element {
 
           <div className={styles.paginationContainer}>
             <button
-              className={styles.paginationButton}
+              className={cn(styles.paginationButton, styles.button)}
               disabled={page === 1}
               onClick={prevPage}
               title="Go to previous page"
@@ -283,7 +305,7 @@ function App(): JSX.Element {
               Page {page} of {totalPages}
             </div>
             <button
-              className={styles.paginationButton}
+              className={cn(styles.paginationButton, styles.button)}
               disabled={page === totalPages}
               onClick={nextPage}
               title="Go to next page"

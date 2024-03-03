@@ -31,6 +31,10 @@
   padding: 0 0.5rem;
 }
 
+.input {
+  max-width: 50px;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -72,7 +76,7 @@
 .row-options-wrapper {
   display: flex;
   justify-content: flex-end;
-  width: 120px;
+  width: 150px;
 }
 
 .player-added {
@@ -95,9 +99,22 @@
   align-items: center;
 }
 
+.button {
+  padding: 0.5em 1em;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  background: #eee;
+  cursor: pointer;
+
+  &:hover {
+    background: #f4f4f4;
+  }
+}
+
 .pagination-button {
   font-weight: bold;
   font-size: 1rem;
+  padding: 0.2em 0.5em;
 }
 
 .table-title {
