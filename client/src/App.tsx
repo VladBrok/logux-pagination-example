@@ -72,7 +72,10 @@ function App(): JSX.Element {
         setPage(action.payload.page)
         setTotalPages(action.payload.totalPages)
 
-        if (action.payload.page > action.payload.totalPages) {
+        if (
+          action.payload.page > action.payload.totalPages &&
+          action.payload.totalPages > 0
+        ) {
           updatePage(action.payload.totalPages)
         }
       })
@@ -172,7 +175,7 @@ function App(): JSX.Element {
     client.sync(updatePlayerAction(editingPlayer))
   }
 
-  const add = (): void => {
+  const addPlayer = (): void => {
     const player: Player = {
       id: faker.string.uuid(),
       name: faker.person.firstName(),
@@ -220,7 +223,7 @@ function App(): JSX.Element {
       <div className={styles.content}>
         <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
-          <button className={styles.button} onClick={add}>
+          <button className={styles.button} onClick={addPlayer}>
             Add random player
           </button>
           <span
