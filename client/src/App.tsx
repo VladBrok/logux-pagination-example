@@ -42,6 +42,10 @@ function App(): JSX.Element {
           setPlayers(action.payload.players)
           setPage(action.payload.page)
           setTotalPages(action.payload.totalPages)
+
+          if (action.payload.page > action.payload.totalPages) {
+            updatePage(action.payload.totalPages)
+          }
         }
       )
     )
@@ -54,6 +58,13 @@ function App(): JSX.Element {
             data.map(x => (x.id === action.payload.id ? action.payload : x))
           )
         }
+      )
+    )
+
+    sub.push(
+      client.type<{ payload: { id: string }; type: string }>(
+        'players/delete',
+        refreshPage
       )
     )
 
@@ -103,6 +114,17 @@ function App(): JSX.Element {
     (player: Player): (() => void) =>
     (): void => {
       setEditingPlayer(player)
+    }
+
+  const deletePlayer =
+    (player: Player): (() => void) =>
+    (): void => {
+      client.sync({
+        payload: {
+          id: player.id
+        },
+        type: 'players/delete'
+      })
     }
 
   const cancelEdit = (): void => {
@@ -229,7 +251,9 @@ function App(): JSX.Element {
                         {editingPlayer?.id !== player.id && (
                           <>
                             <button onClick={edit(player)}>Edit</button>
-                            <button>Delete</button>
+                            <button onClick={deletePlayer(player)}>
+                              Delete
+                            </button>
                           </>
                         )}
                         {editingPlayer?.id === player.id && (
