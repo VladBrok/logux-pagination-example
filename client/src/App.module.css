@@ -31,6 +31,7 @@
   margin-top: 2rem;
   max-width: 500px;
   text-align: center;
+  padding: 0 0.5rem;
 }
 
 .table {
@@ -45,10 +46,14 @@
   margin-bottom: 1rem;
 }
 
+.table {
+  border: 1px solid black;
+}
+
 .table-header-cell,
 .table-cell {
-  border: 1px solid black;
-  padding: 0.5rem;
+  border-bottom: 1px solid black;
+  padding: 0.7rem;
 }
 
 .row-options {
@@ -57,8 +62,9 @@
   width: fit-content;
 }
 
-.table-options-cell {
-  width: 1%;
+.row-options-wrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .pagination-container {

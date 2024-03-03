@@ -119,9 +119,11 @@ function App(): JSX.Element {
                   <td className={styles.tableCell}>{player.name}</td>
                   <td className={styles.tableCell}>{player.rank}</td>
                   <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
-                    <div className={styles.rowOptions}>
-                      <button>Edit</button>
-                      <button>Delete</button>
+                    <div className={styles.rowOptionsWrapper}>
+                      <div className={styles.rowOptions}>
+                        <button>Edit</button>
+                        <button>Delete</button>
+                      </div>
                     </div>
                   </td>
                 </tr>
