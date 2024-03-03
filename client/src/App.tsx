@@ -6,7 +6,7 @@ import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
 
-import { type Player } from '../../api'
+import type { Player } from '../../api'
 import {
   createPlayerAction,
   deletePlayerAction,

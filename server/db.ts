@@ -1,3 +1,5 @@
+import { delay } from 'nanodelay'
+
 import {
   PER_PAGE,
   type Player,
@@ -14,35 +16,44 @@ let players: Player[] = [
   { id: '7', name: 'James', rank: 45 }
 ]
 
-export function findPlayer(id: string): Promise<Player | undefined> {
-  return Promise.resolve(players.find(pl => pl.id === id))
+async function pause(): Promise<void> {
+  await delay(2000)
 }
 
-export function deletePlayer(id: string): Promise<void> {
+export async function findPlayer(id: string): Promise<Player | undefined> {
+  await pause()
+  return players.find(pl => pl.id === id)
+}
+
+export async function deletePlayer(id: string): Promise<void> {
+  await pause()
   players = players.filter(it => it.id !== id)
-  return Promise.resolve()
 }
 
-export function createPlayer(player: Player): Promise<Player> {
+export async function createPlayer(player: Player): Promise<Player> {
+  await pause()
   players.push(player)
-  return Promise.resolve(player)
+  return player
 }
 
-export function updatePlayer(player: Partial<Player>): Promise<void> {
+export async function updatePlayer(player: Partial<Player>): Promise<void> {
+  await pause()
   players = players.map(pl => {
     if (pl.id !== player.id) return pl
     return { ...pl, ...player }
   })
-  return Promise.resolve()
 }
 
-export function getPlayersPage(page: number): Promise<PlayersPageResponse> {
-  return Promise.resolve({
+export async function getPlayersPage(
+  page: number
+): Promise<PlayersPageResponse> {
+  await pause()
+  return {
     page,
     players: players.slice(
       (page - 1) * PER_PAGE,
       (page - 1) * PER_PAGE + PER_PAGE
     ),
     totalPages: Math.ceil(players.length / PER_PAGE)
-  })
+  }
 }

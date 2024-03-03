@@ -133,6 +133,9 @@ importers:
       '@logux/server':
         specifier: ^0.12.10
         version: 0.12.10
+      nanodelay:
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       '@types/node':
         specifier: ^18.19.21
