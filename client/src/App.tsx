@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import { useClient } from '@logux/client/react'
 import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { Player, PlayersPageResponse } from '../../api'
 
@@ -16,6 +16,7 @@ function App(): JSX.Element {
   const client = useClient()
   const [newPlayerAdded, setNewPlayerAdded] = useState<Player>()
   const [newPlayerAddedShown, setNewPlayerAddedShown] = useState(false)
+  const addTimeoutId = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
     client.sync({
@@ -154,11 +155,14 @@ function App(): JSX.Element {
       payload: player,
       type: 'players/create'
     })
-    setNewPlayerAdded(player)
-    setNewPlayerAddedShown(true)
-    setTimeout(() => {
+
+    clearTimeout(addTimeoutId.current)
+    addTimeoutId.current = setTimeout(() => {
       setNewPlayerAddedShown(false)
     }, 2000)
+
+    setNewPlayerAdded(player)
+    setNewPlayerAddedShown(true)
   }
 
   return (
