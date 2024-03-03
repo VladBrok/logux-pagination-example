@@ -14,6 +14,8 @@ function App(): JSX.Element {
   const [totalPages, setTotalPages] = useState(1)
   const [editingPlayer, setEditingPlayer] = useState<Player>()
   const client = useClient()
+  const [newPlayerAdded, setNewPlayerAdded] = useState<Player>()
+  const [newPlayerAddedShown, setNewPlayerAddedShown] = useState(false)
 
   useEffect(() => {
     client.sync({
@@ -130,6 +132,11 @@ function App(): JSX.Element {
       payload: player,
       type: 'players/create'
     })
+    setNewPlayerAdded(player)
+    setNewPlayerAddedShown(true)
+    setTimeout(() => {
+      setNewPlayerAddedShown(false)
+    }, 2000)
   }
 
   return (
@@ -164,6 +171,13 @@ function App(): JSX.Element {
         <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
           <button onClick={add}>Add random player</button>
+          <span
+            className={cn(styles.playerAdded, {
+              [styles.playerAddedVisible]: newPlayerAddedShown
+            })}
+          >
+            Added new player: {newPlayerAdded?.name}
+          </span>
         </div>
         <div>
           <table className={styles.table}>
