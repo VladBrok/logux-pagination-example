@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
+    "@formkit/auto-animate": "^0.8.1",
     "@logux/client": "^0.20.1",
     "@logux/core": "^0.8.5",
     "@nanostores/react": "github:nanostores/react",

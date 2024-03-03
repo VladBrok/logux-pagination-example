@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useClient } from '@logux/client/react'
 import { parseId } from '@logux/core'
 import cn from 'classnames'
@@ -28,6 +29,7 @@ function App(): JSX.Element {
     string[]
   >([])
   const addTimeoutId = useRef<NodeJS.Timeout>()
+  const [animationParent] = useAutoAnimate()
 
   useEffect(() => {
     client.sync({
@@ -213,7 +215,7 @@ function App(): JSX.Element {
                 <th className={styles.tableHeaderCell}></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody ref={animationParent}>
               {players.map(player => (
                 <tr key={player.id}>
                   <td className={styles.tableCell}>{player.id.slice(0, 6)}</td>
