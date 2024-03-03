@@ -5,7 +5,7 @@ import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
 
 import type { Player, PlayersPageResponse } from '../../api'
-import { loadPlayersPageAction } from '../../api/actions.js'
+import { createPlayerAction, loadPlayersPageAction } from '../../api/actions.js'
 
 import styles from './App.module.css'
 
@@ -151,10 +151,7 @@ function App(): JSX.Element {
       name: faker.person.firstName(),
       rank: faker.number.int({ max: 100, min: 1 })
     }
-    client.sync({
-      payload: player,
-      type: 'players/create'
-    })
+    client.sync(createPlayerAction(player))
 
     clearTimeout(addTimeoutId.current)
     addTimeoutId.current = setTimeout(() => {
