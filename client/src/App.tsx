@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { useClient } from '@logux/client/react'
 import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
@@ -13,6 +14,20 @@ function App(): JSX.Element {
   const [totalPages, setTotalPages] = useState(1)
   const [editingPlayer, setEditingPlayer] = useState<Player>()
   const client = useClient()
+
+  useEffect(() => {
+    client.sync({
+      channel: 'players',
+      type: 'logux/subscribe'
+    })
+
+    return () => {
+      client.sync({
+        channel: 'players',
+        type: 'logux/unsubscribe'
+      })
+    }
+  }, [])
 
   useEffect(() => {
     const sub: Unsubscribe[] = []
@@ -40,22 +55,19 @@ function App(): JSX.Element {
       )
     )
 
-    // TODO: show loader
-    client.sync({
-      channel: 'players',
-      type: 'logux/subscribe'
-    })
+    sub.push(
+      client.type<{ payload: Player; type: string }>(
+        'players/create',
+        refreshPage
+      )
+    )
 
     return () => {
-      client.sync({
-        channel: 'players',
-        type: 'logux/unsubscribe'
-      })
       sub.forEach(unsubscribe => {
         unsubscribe()
       })
     }
-  }, [])
+  }, [page])
 
   const prevPage = (): void => {
     if (page <= 1) {
@@ -81,6 +93,10 @@ function App(): JSX.Element {
     })
   }
 
+  const refreshPage = (): void => {
+    updatePage(page)
+  }
+
   const edit =
     (player: Player): (() => void) =>
     (): void => {
@@ -101,6 +117,18 @@ function App(): JSX.Element {
     client.sync({
       payload: editingPlayer,
       type: 'players/update'
+    })
+  }
+
+  const add = (): void => {
+    const player: Player = {
+      id: faker.string.uuid(),
+      name: faker.person.firstName(),
+      rank: faker.number.int({ max: 100, min: 1 })
+    }
+    client.sync({
+      payload: player,
+      type: 'players/create'
     })
   }
 
@@ -133,9 +161,9 @@ function App(): JSX.Element {
       </div>
 
       <div className={styles.content}>
-        <h2 className={styles.tableTitle}>Top Players</h2>
+        <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
-          <button>Add player</button>
+          <button onClick={add}>Add random player</button>
         </div>
         <div>
           <table className={styles.table}>
@@ -150,7 +178,7 @@ function App(): JSX.Element {
             <tbody>
               {players.map(player => (
                 <tr key={player.id}>
-                  <td className={styles.tableCell}>{player.id}</td>
+                  <td className={styles.tableCell}>{player.id.slice(0, 6)}</td>
                   <td className={styles.tableCell}>
                     {editingPlayer?.id !== player.id && player.name}
                     {editingPlayer?.id === player.id && (

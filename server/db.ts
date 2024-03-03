@@ -5,13 +5,13 @@ import {
 } from '../api/index.js'
 
 let players: Player[] = [
-  { id: '1', name: 'Jack', rank: 50 },
+  { id: '1', name: 'Jack', rank: 20 },
   { id: '2', name: 'John', rank: 30 },
   { id: '3', name: 'Emily', rank: 45 },
-  { id: '4', name: 'Sarah', rank: 35 },
+  { id: '4', name: 'Sarah', rank: 50 },
   { id: '5', name: 'Michael', rank: 25 },
   { id: '6', name: 'Emma', rank: 40 },
-  { id: '7', name: 'James', rank: 28 }
+  { id: '7', name: 'James', rank: 45 }
 ]
 
 export function findPlayer(id: string): Promise<Player | undefined> {
