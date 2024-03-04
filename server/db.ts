@@ -20,11 +20,6 @@ async function pause(): Promise<void> {
   await delay(2000)
 }
 
-export async function findPlayer(id: string): Promise<Player | undefined> {
-  await pause()
-  return players.find(pl => pl.id === id)
-}
-
 export async function deletePlayer(id: string): Promise<void> {
   await pause()
   players = players.filter(it => it.id !== id)

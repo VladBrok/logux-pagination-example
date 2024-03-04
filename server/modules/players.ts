@@ -1,4 +1,3 @@
-import { LoguxNotFoundError } from '@logux/actions'
 import type { BaseServer } from '@logux/server'
 
 import {
@@ -14,7 +13,6 @@ import {
 import {
   createPlayer,
   deletePlayer,
-  findPlayer,
   getPlayersPage,
   updatePlayer
 } from '../db.js'
@@ -64,10 +62,6 @@ export default (server: BaseServer): void => {
       return true
     },
     async process(ctx, action) {
-      const player = await findPlayer(action.payload.id)
-
-      if (!player) throw new LoguxNotFoundError()
-
       await updatePlayer(action.payload)
     },
     resend() {
