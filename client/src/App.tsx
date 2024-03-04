@@ -134,6 +134,7 @@ function App(): JSX.Element {
 
   const updatePage = (newPage: number): void => {
     // TODO: show loader (maybe until /pageLoaded fires or maybe just using `sync`)
+    setPage(newPage)
     client.sync(
       loadPlayersPageAction({
         page: newPage
