@@ -5,6 +5,9 @@ import {
   createPlayerAction,
   deletePlayerAction,
   loadPlayersPageAction,
+  playerCreatedAction,
+  playerDeletedAction,
+  PLAYERS_CHANNEL,
   playersPageLoadedAction,
   updatePlayerAction
 } from '../../api/actions.js'
@@ -17,7 +20,7 @@ import {
 } from '../db.js'
 
 export default (server: BaseServer): void => {
-  server.channel('players', {
+  server.channel(PLAYERS_CHANNEL, {
     access() {
       return true
     },
@@ -42,10 +45,17 @@ export default (server: BaseServer): void => {
       return true
     },
     async process(ctx, action) {
-      await createPlayer(action.payload)
+      const player = await createPlayer(action.payload)
+      await server.process(playerCreatedAction(player))
+    }
+  })
+
+  server.type(playerCreatedAction, {
+    async access() {
+      return false
     },
     resend() {
-      return 'players'
+      return [PLAYERS_CHANNEL]
     }
   })
 
@@ -61,7 +71,7 @@ export default (server: BaseServer): void => {
       await updatePlayer(action.payload)
     },
     resend() {
-      return 'players'
+      return PLAYERS_CHANNEL
     }
   })
 
@@ -71,9 +81,23 @@ export default (server: BaseServer): void => {
     },
     async process(ctx, action) {
       await deletePlayer(action.payload.id)
+      await server.process(
+        playerDeletedAction({
+          id: action.payload.id
+        })
+      )
     },
     resend() {
-      return 'players'
+      return PLAYERS_CHANNEL
+    }
+  })
+
+  server.type(playerDeletedAction, {
+    async access() {
+      return false
+    },
+    resend() {
+      return [PLAYERS_CHANNEL]
     }
   })
 }

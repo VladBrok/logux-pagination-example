@@ -11,6 +11,9 @@ import {
   createPlayerAction,
   deletePlayerAction,
   loadPlayersPageAction,
+  playerCreatedAction,
+  playerDeletedAction,
+  PLAYERS_CHANNEL,
   playersPageLoadedAction,
   updatePlayerAction
 } from '../../api/actions.js'
@@ -50,16 +53,22 @@ function App(): JSX.Element {
     })
   })
   const [isLoadingPage, setIsLoadingPage] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
-    client.sync({
-      channel: 'players',
-      type: 'logux/subscribe'
-    })
+    setIsLoadingPage(true)
+    client
+      .sync({
+        channel: PLAYERS_CHANNEL,
+        type: 'logux/subscribe'
+      })
+      .finally(() => {
+        setIsLoadingPage(false)
+      })
 
     return () => {
       client.sync({
-        channel: 'players',
+        channel: PLAYERS_CHANNEL,
         type: 'logux/unsubscribe'
       })
     }
@@ -102,13 +111,13 @@ function App(): JSX.Element {
     )
 
     sub.push(
-      client.type(deletePlayerAction, () => {
+      client.type(playerDeletedAction, () => {
         refreshPage()
       })
     )
 
     sub.push(
-      client.type(createPlayerAction, () => {
+      client.type(playerCreatedAction, () => {
         refreshPage()
       })
     )
@@ -183,21 +192,26 @@ function App(): JSX.Element {
     client.sync(updatePlayerAction(editingPlayer))
   }
 
-  const addPlayer = (): void => {
+  const createPlayer = async (): void => {
     const player: Player = {
       id: faker.string.uuid(),
       name: faker.person.firstName(),
       rank: faker.number.int({ max: 100, min: 1 })
     }
-    client.sync(createPlayerAction(player))
+    // TODO: loader on delete and create ?
+    setIsCreating(true)
+    try {
+      await client.sync(createPlayerAction(player))
+      clearTimeout(addTimeoutId.current)
+      addTimeoutId.current = setTimeout(() => {
+        setNewPlayerAddedShown(false)
+      }, 2000)
 
-    clearTimeout(addTimeoutId.current)
-    addTimeoutId.current = setTimeout(() => {
-      setNewPlayerAddedShown(false)
-    }, 2000)
-
-    setNewPlayerAdded(player)
-    setNewPlayerAddedShown(true)
+      setNewPlayerAdded(player)
+      setNewPlayerAddedShown(true)
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   return (
@@ -231,8 +245,12 @@ function App(): JSX.Element {
       <div className={styles.content}>
         <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
-          <button className={styles.button} onClick={addPlayer}>
-            Add random player
+          <button
+            className={styles.button}
+            disabled={isCreating}
+            onClick={createPlayer}
+          >
+            {isCreating ? 'Loading...' : 'Add random player'}
           </button>
           <span
             className={cn(styles.playerAdded, {
