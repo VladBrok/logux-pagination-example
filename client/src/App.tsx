@@ -97,6 +97,7 @@ function App(): JSX.Element {
           return
         }
 
+        // TODO: this should be inside a separate component... (state - only one item, not array)
         setUpdatingPlayersAnimation(prev => [...prev, action.payload.id])
         setTimeout(() => {
           setPlayers(data =>
