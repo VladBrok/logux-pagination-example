@@ -6,14 +6,14 @@ import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useRef, useState } from 'react'
 
-import type { Player } from '../../api'
+import { PER_PAGE, type Player } from '../../api'
 import {
+  PLAYERS_CHANNEL,
   createPlayerAction,
   deletePlayerAction,
   loadPlayersPageAction,
   playerCreatedAction,
   playerDeletedAction,
-  PLAYERS_CHANNEL,
   playersPageLoadedAction,
   updatePlayerAction
 } from '../../api/actions.js'
@@ -53,7 +53,6 @@ function App(): JSX.Element {
     })
   })
   const [isLoadingPage, setIsLoadingPage] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
     setIsLoadingPage(true)
@@ -195,25 +194,27 @@ function App(): JSX.Element {
     client.sync(updatePlayerAction(editingPlayer))
   }
 
-  const createPlayer = async (): void => {
+  const createPlayer = async (): Promise<void> => {
     const player: Player = {
       id: faker.string.uuid(),
       name: faker.person.firstName(),
       rank: faker.number.int({ max: 100, min: 1 })
     }
-    // TODO: loader on delete and create ?
-    setIsCreating(true)
-    try {
-      await client.sync(createPlayerAction(player))
-      clearTimeout(addTimeoutId.current)
-      addTimeoutId.current = setTimeout(() => {
-        setNewPlayerAddedShown(false)
-      }, 2000)
 
-      setNewPlayerAdded(player)
-      setNewPlayerAddedShown(true)
-    } finally {
-      setIsCreating(false)
+    setIsLoadingPage(true)
+    client.sync(createPlayerAction(player)).catch(() => {
+      setIsLoadingPage(false)
+    })
+
+    clearTimeout(addTimeoutId.current)
+    addTimeoutId.current = setTimeout(() => {
+      setNewPlayerAddedShown(false)
+    }, 2000)
+    setNewPlayerAdded(player)
+    setNewPlayerAddedShown(true)
+
+    if (players.length < PER_PAGE) {
+      setPlayers(data => [...data, player])
     }
   }
 
@@ -248,12 +249,8 @@ function App(): JSX.Element {
       <div className={styles.content}>
         <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
-          <button
-            className={styles.button}
-            disabled={isCreating}
-            onClick={createPlayer}
-          >
-            {isCreating ? 'Loading...' : 'Add random player'}
+          <button className={styles.button} onClick={createPlayer}>
+            Add random player
           </button>
           <span
             className={cn(styles.playerAdded, {
@@ -384,7 +381,7 @@ function App(): JSX.Element {
           <div className={styles.paginationContainer}>
             <button
               className={cn(styles.paginationButton, styles.button)}
-              disabled={page === 1 || isLoadingPage}
+              disabled={page === 1}
               onClick={prevPage}
               title="Go to previous page"
             >
@@ -395,7 +392,7 @@ function App(): JSX.Element {
             </div>
             <button
               className={cn(styles.paginationButton, styles.button)}
-              disabled={page === totalPages || isLoadingPage}
+              disabled={page === totalPages}
               onClick={nextPage}
               title="Go to next page"
             >
