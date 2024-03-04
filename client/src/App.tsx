@@ -144,7 +144,6 @@ function App(): JSX.Element {
   }
 
   const updatePage = (newPage: number): void => {
-    // TODO: show loader (maybe until /pageLoaded fires or maybe just using `sync`)
     setPage(newPage)
     setIsLoadingPage(true)
     client
@@ -171,7 +170,11 @@ function App(): JSX.Element {
   const deletePlayer =
     (player: Player): (() => void) =>
     (): void => {
-      client.sync(deletePlayerAction({ id: player.id }))
+      setPlayers(data => data.filter(x => x.id !== player.id))
+      setIsLoadingPage(true)
+      client.sync(deletePlayerAction({ id: player.id })).catch(() => {
+        setIsLoadingPage(false)
+      })
     }
 
   const cancelEdit = (): void => {
