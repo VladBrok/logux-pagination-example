@@ -16,6 +16,7 @@ import {
 } from '../../api/actions.js'
 
 import styles from './App.module.css'
+import { Spinner } from './components/Spinner/Spinner'
 
 function App(): JSX.Element {
   const [players, setPlayers] = useState<Player[]>([])
@@ -48,6 +49,7 @@ function App(): JSX.Element {
       easing: 'ease-in-out'
     })
   })
+  const [isLoadingPage, setIsLoadingPage] = useState(false)
 
   useEffect(() => {
     client.sync({
@@ -135,11 +137,16 @@ function App(): JSX.Element {
   const updatePage = (newPage: number): void => {
     // TODO: show loader (maybe until /pageLoaded fires or maybe just using `sync`)
     setPage(newPage)
-    client.sync(
-      loadPlayersPageAction({
-        page: newPage
+    setIsLoadingPage(true)
+    client
+      .sync(
+        loadPlayersPageAction({
+          page: newPage
+        })
+      )
+      .finally(() => {
+        setIsLoadingPage(false)
       })
-    )
   }
 
   const refreshPage = (): void => {
@@ -351,7 +358,7 @@ function App(): JSX.Element {
           <div className={styles.paginationContainer}>
             <button
               className={cn(styles.paginationButton, styles.button)}
-              disabled={page === 1}
+              disabled={page === 1 || isLoadingPage}
               onClick={prevPage}
               title="Go to previous page"
             >
@@ -362,13 +369,15 @@ function App(): JSX.Element {
             </div>
             <button
               className={cn(styles.paginationButton, styles.button)}
-              disabled={page === totalPages}
+              disabled={page === totalPages || isLoadingPage}
               onClick={nextPage}
               title="Go to next page"
             >
               &gt;
             </button>
           </div>
+
+          {isLoadingPage && <Spinner />}
         </div>
       </div>
     </div>
