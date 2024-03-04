@@ -14,9 +14,9 @@ import {
   playersPageLoadedAction,
   updatePlayerAction
 } from '../../api/actions.js'
+import { Spinner } from './components/Spinner/Spinner'
 
 import styles from './App.module.css'
-import { Spinner } from './components/Spinner/Spinner'
 
 function App(): JSX.Element {
   const [players, setPlayers] = useState<Player[]>([])
@@ -244,6 +244,11 @@ function App(): JSX.Element {
         </div>
         <div>
           <div className={styles.tableWrapper}>
+            {isLoadingPage && (
+              <div className={styles.tableSpinner}>
+                <Spinner />
+              </div>
+            )}
             <table className={styles.table}>
               <thead>
                 <tr className={styles.tableRow}>
@@ -376,8 +381,6 @@ function App(): JSX.Element {
               &gt;
             </button>
           </div>
-
-          {isLoadingPage && <Spinner />}
         </div>
       </div>
     </div>
