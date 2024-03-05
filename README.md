@@ -1,6 +1,6 @@
 # Logux pagination example
 
-An example of how to implement a **table** that's updated in **real time** and supports **pagination** using the [logux](https://github.com/logux) framework.
+An example of how to implement a **real-time table** with **pagination** using the [logux](https://github.com/logux) framework
 
 ## Run locally
 
