@@ -6,6 +6,7 @@ export type Player = {
   id: string
   name: string
   rank: number
+  updatedAt: number
 }
 
 export type PlayersPageResponse = {

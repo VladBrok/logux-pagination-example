@@ -169,7 +169,8 @@ function App(): JSX.Element {
     const player: Player = {
       id: faker.string.uuid(),
       name: faker.person.firstName(),
-      rank: faker.number.int({ max: 100, min: 1 })
+      rank: faker.number.int({ max: 100, min: 1 }),
+      updatedAt: Date.now()
     }
 
     setIsUpdating(true)

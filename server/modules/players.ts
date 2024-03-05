@@ -1,3 +1,4 @@
+import { isFirstOlder } from '@logux/core'
 import type { BaseServer } from '@logux/server'
 
 import {
@@ -13,6 +14,7 @@ import {
 import {
   createPlayer,
   deletePlayer,
+  findPlayer,
   getPlayersPage,
   updatePlayer
 } from '../db.js'
@@ -66,7 +68,12 @@ export default (server: BaseServer): void => {
     async access() {
       return true
     },
-    async process(ctx, action) {
+    async process(ctx, action, meta) {
+      const player = await findPlayer(action.payload.id)
+      if (!player || isFirstOlder(meta, player.updatedAt.toString())) {
+        return
+      }
+
       await updatePlayer(action.payload)
     },
     resend() {
