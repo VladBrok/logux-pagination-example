@@ -19,7 +19,7 @@ export function Pagination({
     <div className={styles.paginationContainer}>
       <button
         className={cn(styles.paginationButton, 'button')}
-        disabled={page === 1}
+        disabled={page <= 1}
         onClick={onPrevPage}
         title="Go to previous page"
       >
@@ -30,7 +30,7 @@ export function Pagination({
       </div>
       <button
         className={cn(styles.paginationButton, 'button')}
-        disabled={page === totalPages}
+        disabled={page >= totalPages}
         onClick={onNextPage}
         title="Go to next page"
       >

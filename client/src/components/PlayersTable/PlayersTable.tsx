@@ -63,8 +63,8 @@ export function PlayersTable(): JSX.Element {
 
         setUpdatingPlayersAnimation(prev => [...prev, action.payload.id])
         setTimeout(() => {
-          setPlayers(data =>
-            data.map(x => (x.id === action.payload.id ? action.payload : x))
+          setPlayers(prev =>
+            prev.map(x => (x.id === action.payload.id ? action.payload : x))
           )
           setUpdatingPlayersAnimation(prev =>
             prev.filter(x => x !== action.payload.id)
@@ -126,23 +126,19 @@ export function PlayersTable(): JSX.Element {
     )
   }
 
-  const deletePlayer =
-    (player: Player): (() => void) =>
-    (): void => {
-      setPlayers(data => data.filter(x => x.id !== player.id))
-      setIsUpdating(true)
-      client.sync(deletePlayerAction({ id: player.id })).catch(() => {
-        setIsUpdating(false)
-      })
-    }
+  const deletePlayer = (player: Player): void => {
+    setPlayers(data => data.filter(x => x.id !== player.id))
+    setIsUpdating(true)
+    client.sync(deletePlayerAction({ id: player.id })).catch(() => {
+      setIsUpdating(false)
+    })
+  }
 
-  const saveEdit = (editingPlayer: Player): void => {
+  const saveEditedPlayer = (edited: Player): void => {
     setPlayers(data =>
-      data.map(player =>
-        player.id === editingPlayer.id ? editingPlayer : player
-      )
+      data.map(player => (player.id === edited.id ? edited : player))
     )
-    client.sync(updatePlayerAction(editingPlayer))
+    client.sync(updatePlayerAction(edited))
   }
 
   const createPlayer = async (player: Player): Promise<void> => {
@@ -150,7 +146,6 @@ export function PlayersTable(): JSX.Element {
     client.sync(createPlayerAction(player)).catch(() => {
       setIsUpdating(false)
     })
-
     if (players.length < PER_PAGE) {
       setPlayers(data => [...data, player])
     }
@@ -181,8 +176,10 @@ export function PlayersTable(): JSX.Element {
                 <tr className={styles.tableRow} key={player.id}>
                   <PlayersTableRow
                     isUpdating={updatingPlayersAnimation.includes(player.id)}
-                    onDeletePlayer={deletePlayer(player)}
-                    onSaveEdit={saveEdit}
+                    onDeletePlayer={() => {
+                      deletePlayer(player)
+                    }}
+                    onSaveEdit={saveEditedPlayer}
                     player={player}
                   />
                 </tr>
