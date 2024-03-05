@@ -22,6 +22,7 @@ import { useSubscription } from './hooks/use-subscription'
 import { useTableAnimation } from './hooks/use-table-animation'
 
 import styles from './App.module.css'
+import { Pagination } from './components/Pagination/Pagination'
 
 function App(): JSX.Element {
   const [players, setPlayers] = useState<Player[]>([])
@@ -197,7 +198,7 @@ function App(): JSX.Element {
       <div className={styles.content}>
         <h2 className={styles.tableTitle}>All Players</h2>
         <div className={styles.tableOptions}>
-          <button className={styles.button} onClick={createPlayer}>
+          <button className={'button'} onClick={createPlayer}>
             Add random player
           </button>
           <span
@@ -291,13 +292,13 @@ function App(): JSX.Element {
                           {editingPlayer?.id !== player.id && (
                             <>
                               <button
-                                className={styles.button}
+                                className={'button'}
                                 onClick={edit(player)}
                               >
                                 Edit
                               </button>
                               <button
-                                className={styles.button}
+                                className={'button'}
                                 onClick={deletePlayer(player)}
                               >
                                 Delete
@@ -306,16 +307,10 @@ function App(): JSX.Element {
                           )}
                           {editingPlayer?.id === player.id && (
                             <>
-                              <button
-                                className={styles.button}
-                                onClick={saveEdit}
-                              >
+                              <button className={'button'} onClick={saveEdit}>
                                 Save
                               </button>{' '}
-                              <button
-                                className={styles.button}
-                                onClick={cancelEdit}
-                              >
+                              <button className={'button'} onClick={cancelEdit}>
                                 Cancel
                               </button>
                             </>
@@ -329,27 +324,12 @@ function App(): JSX.Element {
             </table>
           </div>
 
-          <div className={styles.paginationContainer}>
-            <button
-              className={cn(styles.paginationButton, styles.button)}
-              disabled={page === 1}
-              onClick={prevPage}
-              title="Go to previous page"
-            >
-              &lt;
-            </button>
-            <div>
-              Page {page} of {totalPages}
-            </div>
-            <button
-              className={cn(styles.paginationButton, styles.button)}
-              disabled={page === totalPages}
-              onClick={nextPage}
-              title="Go to next page"
-            >
-              &gt;
-            </button>
-          </div>
+          <Pagination
+            nextPage={nextPage}
+            page={page}
+            prevPage={prevPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
     </div>

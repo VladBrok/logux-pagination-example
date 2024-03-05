@@ -1,6 +1,7 @@
 {
   "extends": "@logux/eslint-config/ts",
   "rules": {
-    "prefer-let/prefer-let": "off"
+    "prefer-let/prefer-let": "off",
+    "import/extensions": "off"
   }
 }
