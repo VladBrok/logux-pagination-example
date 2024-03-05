@@ -17,6 +17,7 @@ import {
   updatePlayerAction
 } from '../../api/actions.js'
 import { Spinner } from './components/Spinner/Spinner'
+import { useSubscription } from './hooks/use-subscription'
 import { useTableAnimation } from './hooks/use-table-animation'
 
 import styles from './App.module.css'
@@ -36,24 +37,7 @@ function App(): JSX.Element {
   const [animationParent] = useTableAnimation()
   const [isLoadingPage, setIsLoadingPage] = useState(false)
 
-  useEffect(() => {
-    setIsLoadingPage(true)
-    client
-      .sync({
-        channel: PLAYERS_CHANNEL,
-        type: 'logux/subscribe'
-      })
-      .finally(() => {
-        setIsLoadingPage(false)
-      })
-
-    return () => {
-      client.sync({
-        channel: PLAYERS_CHANNEL,
-        type: 'logux/unsubscribe'
-      })
-    }
-  }, [])
+  useSubscription(PLAYERS_CHANNEL, setIsLoadingPage)
 
   useEffect(() => {
     const sub: Unsubscribe[] = []
