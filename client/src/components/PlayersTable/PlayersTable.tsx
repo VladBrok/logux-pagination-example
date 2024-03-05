@@ -73,9 +73,9 @@ export function PlayersTable(): JSX.Element {
       })
     )
 
-    sub.push(client.type(playerDeletedAction, refreshPage))
+    sub.push(client.type(playerDeletedAction, refreshCurrentPage))
 
-    sub.push(client.type(playerCreatedAction, refreshPage))
+    sub.push(client.type(playerCreatedAction, refreshCurrentPage))
 
     return () => {
       sub.forEach(unsubscribe => {
@@ -115,7 +115,7 @@ export function PlayersTable(): JSX.Element {
       })
   }
 
-  const refreshPage = (action: {
+  const refreshCurrentPage = (action: {
     payload: { senderClientId: string }
   }): void => {
     updatePage(
