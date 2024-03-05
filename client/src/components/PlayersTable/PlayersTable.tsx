@@ -1,9 +1,8 @@
-import { faker } from '@faker-js/faker'
 import { useClient } from '@logux/client/react'
 import { parseId } from '@logux/core'
 import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { PER_PAGE, type Player } from '../../../../api'
 import {
@@ -20,6 +19,7 @@ import { useSubscription } from '../../hooks/use-subscription'
 import { useTableAnimation } from '../../hooks/use-table-animation'
 import { Pagination } from '../Pagination/Pagination'
 import { Spinner } from '../Spinner/Spinner'
+import { TableOptions } from '../TableOptions/TableOptions'
 
 import styles from './PlayersTable.module.css'
 
@@ -29,12 +29,9 @@ export function PlayersTable(): JSX.Element {
   const [totalPages, setTotalPages] = useState(1)
   const [editingPlayer, setEditingPlayer] = useState<Player>()
   const client = useClient()
-  const [newPlayerAdded, setNewPlayerAdded] = useState<Player>()
-  const [newPlayerAddedShown, setNewPlayerAddedShown] = useState(false)
   const [updatingPlayersAnimation, setUpdatingPlayersAnimation] = useState<
     string[]
   >([])
-  const addTimeoutId = useRef<NodeJS.Timeout>()
   const [animationParent] = useTableAnimation()
   const [isLoadingPage, setIsLoadingPage] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -164,25 +161,11 @@ export function PlayersTable(): JSX.Element {
     client.sync(updatePlayerAction(editingPlayer))
   }
 
-  const createPlayer = async (): Promise<void> => {
-    const player: Player = {
-      id: faker.string.uuid(),
-      name: faker.person.firstName(),
-      rank: faker.number.int({ max: 100, min: 1 }),
-      updatedAt: Date.now()
-    }
-
+  const createPlayer = async (player: Player): Promise<void> => {
     setIsUpdating(true)
     client.sync(createPlayerAction(player)).catch(() => {
       setIsUpdating(false)
     })
-
-    clearTimeout(addTimeoutId.current)
-    addTimeoutId.current = setTimeout(() => {
-      setNewPlayerAddedShown(false)
-    }, 2000)
-    setNewPlayerAdded(player)
-    setNewPlayerAddedShown(true)
 
     if (players.length < PER_PAGE) {
       setPlayers(data => [...data, player])
@@ -192,21 +175,7 @@ export function PlayersTable(): JSX.Element {
   return (
     <div className={styles.content}>
       <h2 className={styles.tableTitle}>All Players</h2>
-      <div className={styles.tableOptions}>
-        <button className={'button'} onClick={createPlayer}>
-          Add random player
-        </button>
-        <span
-          className={cn(styles.playerAdded, {
-            [styles.playerAddedVisible]: newPlayerAddedShown
-          })}
-        >
-          Added new player: {newPlayerAdded?.name}
-        </span>
-        {isUpdating && (
-          <div className={styles.updateIndicator}>Updating...</div>
-        )}
-      </div>
+      <TableOptions isUpdating={isUpdating} onCreateNewPlayer={createPlayer} />
       <div>
         <div className={styles.tableWrapper}>
           {isLoadingPage && (

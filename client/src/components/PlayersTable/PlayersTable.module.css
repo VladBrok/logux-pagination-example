@@ -11,18 +11,6 @@
   max-width: 60px;
 }
 
-.table-options {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.update-indicator {
-  margin-left: auto;
-}
-
 .table-wrapper {
   min-height: 328px;
   box-shadow: 0 0 0 1px #666;
@@ -72,16 +60,6 @@
   display: flex;
   justify-content: flex-end;
   width: 150px;
-}
-
-.player-added {
-  color: green;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.player-added-visible {
-  opacity: 1;
 }
 
 .table-title {

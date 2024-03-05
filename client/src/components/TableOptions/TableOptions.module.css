@@ -1,0 +1,21 @@
+.player-added {
+  color: green;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.player-added-visible {
+  opacity: 1;
+}
+
+.table-options {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.update-indicator {
+  margin-left: auto;
+}
