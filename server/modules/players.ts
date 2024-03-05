@@ -44,7 +44,12 @@ export default (server: BaseServer): void => {
     },
     async process(ctx, action) {
       const player = await createPlayer(action.payload)
-      await server.process(playerCreatedAction(player))
+      await server.process(
+        playerCreatedAction({
+          player,
+          senderClientId: ctx.clientId
+        })
+      )
     }
   })
 
@@ -77,7 +82,8 @@ export default (server: BaseServer): void => {
       await deletePlayer(action.payload.id)
       await server.process(
         playerDeletedAction({
-          id: action.payload.id
+          id: action.payload.id,
+          senderClientId: ctx.clientId
         })
       )
     },

@@ -78,17 +78,9 @@ function App(): JSX.Element {
       })
     )
 
-    sub.push(
-      client.type(playerDeletedAction, () => {
-        refreshPage()
-      })
-    )
+    sub.push(client.type(playerDeletedAction, refreshPage))
 
-    sub.push(
-      client.type(playerCreatedAction, () => {
-        refreshPage()
-      })
-    )
+    sub.push(client.type(playerCreatedAction, refreshPage))
 
     return () => {
       sub.forEach(unsubscribe => {
@@ -128,8 +120,15 @@ function App(): JSX.Element {
       })
   }
 
-  const refreshPage = (): void => {
-    updatePage(page, setIsUpdating)
+  const refreshPage = (action: {
+    payload: { senderClientId: string }
+  }): void => {
+    updatePage(
+      page,
+      client.clientId === action.payload.senderClientId
+        ? setIsUpdating
+        : () => {}
+    )
   }
 
   const edit =
