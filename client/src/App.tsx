@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useClient } from '@logux/client/react'
 import { parseId } from '@logux/core'
 import cn from 'classnames'
@@ -18,6 +17,7 @@ import {
   updatePlayerAction
 } from '../../api/actions.js'
 import { Spinner } from './components/Spinner/Spinner'
+import { useTableAnimation } from './hooks/use-table-animation'
 
 import styles from './App.module.css'
 
@@ -33,25 +33,7 @@ function App(): JSX.Element {
     string[]
   >([])
   const addTimeoutId = useRef<NodeJS.Timeout>()
-  const [animationParent] = useAutoAnimate((el, action) => {
-    let keyframes: Keyframe[] = []
-    if (action === 'add') {
-      keyframes = [
-        { opacity: 0, transform: 'translateX(20%)' },
-        { opacity: 1, transform: 'translateX(0)' }
-      ]
-    }
-    if (action === 'remove') {
-      keyframes = [
-        { opacity: 1, transform: 'translateX(0)' },
-        { opacity: 0, transform: 'translateX(20%)' }
-      ]
-    }
-    return new KeyframeEffect(el, keyframes, {
-      duration: 400,
-      easing: 'ease-in-out'
-    })
-  })
+  const [animationParent] = useTableAnimation()
   const [isLoadingPage, setIsLoadingPage] = useState(false)
 
   useEffect(() => {
