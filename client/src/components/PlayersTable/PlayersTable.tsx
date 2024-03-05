@@ -1,6 +1,5 @@
 import { useClient } from '@logux/client/react'
 import { parseId } from '@logux/core'
-import cn from 'classnames'
 import type { Unsubscribe } from 'nanoevents'
 import { useEffect, useState } from 'react'
 
@@ -18,6 +17,7 @@ import {
 import { useSubscription } from '../../hooks/use-subscription'
 import { useTableAnimation } from '../../hooks/use-table-animation'
 import { Pagination } from '../Pagination/Pagination'
+import { PlayersTableRow } from '../PlayersTableRow/PlayersTableRow'
 import { Spinner } from '../Spinner/Spinner'
 import { TableOptions } from '../TableOptions/TableOptions'
 
@@ -27,7 +27,6 @@ export function PlayersTable(): JSX.Element {
   const [players, setPlayers] = useState<Player[]>([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [editingPlayer, setEditingPlayer] = useState<Player>()
   const client = useClient()
   const [updatingPlayersAnimation, setUpdatingPlayersAnimation] = useState<
     string[]
@@ -127,12 +126,6 @@ export function PlayersTable(): JSX.Element {
     )
   }
 
-  const edit =
-    (player: Player): (() => void) =>
-    (): void => {
-      setEditingPlayer(player)
-    }
-
   const deletePlayer =
     (player: Player): (() => void) =>
     (): void => {
@@ -143,21 +136,12 @@ export function PlayersTable(): JSX.Element {
       })
     }
 
-  const cancelEdit = (): void => {
-    setEditingPlayer(undefined)
-  }
-
-  const saveEdit = (): void => {
-    if (!editingPlayer) {
-      return
-    }
-
+  const saveEdit = (editingPlayer: Player): void => {
     setPlayers(data =>
       data.map(player =>
         player.id === editingPlayer.id ? editingPlayer : player
       )
     )
-    setEditingPlayer(undefined)
     client.sync(updatePlayerAction(editingPlayer))
   }
 
@@ -195,86 +179,12 @@ export function PlayersTable(): JSX.Element {
             <tbody ref={animationParent}>
               {players.map(player => (
                 <tr className={styles.tableRow} key={player.id}>
-                  <td className={styles.tableCell}>{player.id.slice(0, 6)}</td>
-                  <td className={styles.tableCell}>
-                    {editingPlayer?.id !== player.id && (
-                      <span
-                        className={cn(styles.cellData, {
-                          [styles.cellDataFaded]:
-                            updatingPlayersAnimation.includes(player.id)
-                        })}
-                      >
-                        {player.name}
-                      </span>
-                    )}
-                    {editingPlayer?.id === player.id && (
-                      <input
-                        className={styles.input}
-                        onChange={e => {
-                          setEditingPlayer({
-                            ...editingPlayer,
-                            name: e.target.value
-                          })
-                        }}
-                        type="text"
-                        value={editingPlayer.name}
-                      />
-                    )}
-                  </td>
-                  <td className={styles.tableCell}>
-                    {editingPlayer?.id !== player.id && (
-                      <span
-                        className={cn(styles.cellData, {
-                          [styles.cellDataFaded]:
-                            updatingPlayersAnimation.includes(player.id)
-                        })}
-                      >
-                        {player.rank}
-                      </span>
-                    )}
-                    {editingPlayer?.id === player.id && (
-                      <input
-                        className={styles.input}
-                        onChange={e => {
-                          setEditingPlayer({
-                            ...editingPlayer,
-                            rank: parseFloat(e.target.value)
-                          })
-                        }}
-                        type="number"
-                        value={editingPlayer.rank}
-                      />
-                    )}
-                  </td>
-                  <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
-                    <div className={styles.rowOptionsWrapper}>
-                      <div className={styles.rowOptions}>
-                        {editingPlayer?.id !== player.id && (
-                          <>
-                            <button className={'button'} onClick={edit(player)}>
-                              Edit
-                            </button>
-                            <button
-                              className={'button'}
-                              onClick={deletePlayer(player)}
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                        {editingPlayer?.id === player.id && (
-                          <>
-                            <button className={'button'} onClick={saveEdit}>
-                              Save
-                            </button>{' '}
-                            <button className={'button'} onClick={cancelEdit}>
-                              Cancel
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </td>
+                  <PlayersTableRow
+                    isUpdating={updatingPlayersAnimation.includes(player.id)}
+                    onDeletePlayer={deletePlayer(player)}
+                    onSaveEdit={saveEdit}
+                    player={player}
+                  />
                 </tr>
               ))}
             </tbody>

@@ -33,8 +33,7 @@
   border-radius: 10px;
 }
 
-.table-header-cell,
-.table-cell {
+.table-header-cell {
   padding: 0.8rem;
 }
 
@@ -42,35 +41,6 @@
   border-top: 1px solid #666;
 }
 
-.table-cell {
-  overflow-wrap: anywhere;
-}
-
-.table-options-cell {
-  width: 1%;
-}
-
-.row-options {
-  display: flex;
-  gap: 0.8rem;
-  width: fit-content;
-}
-
-.row-options-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  width: 150px;
-}
-
 .table-title {
   margin-bottom: 2rem;
-}
-
-.cell-data {
-  opacity: 1;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.cell-data-faded {
-  opacity: 0;
 }
