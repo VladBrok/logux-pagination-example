@@ -37,6 +37,7 @@ function App(): JSX.Element {
   const addTimeoutId = useRef<NodeJS.Timeout>()
   const [animationParent] = useTableAnimation()
   const [isLoadingPage, setIsLoadingPage] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useSubscription(PLAYERS_CHANNEL, setIsLoadingPage)
 
@@ -110,9 +111,12 @@ function App(): JSX.Element {
     updatePage(page + 1)
   }
 
-  const updatePage = (newPage: number): void => {
+  const updatePage = (
+    newPage: number,
+    setIsLoading = setIsLoadingPage
+  ): void => {
     setPage(newPage)
-    setIsLoadingPage(true)
+    setIsLoading(true)
     client
       .sync(
         loadPlayersPageAction({
@@ -120,12 +124,12 @@ function App(): JSX.Element {
         })
       )
       .finally(() => {
-        setIsLoadingPage(false)
+        setIsLoading(false)
       })
   }
 
   const refreshPage = (): void => {
-    updatePage(page)
+    updatePage(page, setIsUpdating)
   }
 
   const edit =
@@ -138,9 +142,9 @@ function App(): JSX.Element {
     (player: Player): (() => void) =>
     (): void => {
       setPlayers(data => data.filter(x => x.id !== player.id))
-      setIsLoadingPage(true)
+      setIsUpdating(true)
       client.sync(deletePlayerAction({ id: player.id })).catch(() => {
-        setIsLoadingPage(false)
+        setIsUpdating(false)
       })
     }
 
@@ -169,9 +173,9 @@ function App(): JSX.Element {
       rank: faker.number.int({ max: 100, min: 1 })
     }
 
-    setIsLoadingPage(true)
+    setIsUpdating(true)
     client.sync(createPlayerAction(player)).catch(() => {
-      setIsLoadingPage(false)
+      setIsUpdating(false)
     })
 
     clearTimeout(addTimeoutId.current)
@@ -203,6 +207,9 @@ function App(): JSX.Element {
           >
             Added new player: {newPlayerAdded?.name}
           </span>
+          {isUpdating && (
+            <div className={styles.updateIndicator}>Updating...</div>
+          )}
         </div>
         <div>
           <div className={styles.tableWrapper}>

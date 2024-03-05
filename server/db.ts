@@ -17,7 +17,7 @@ let players: Player[] = [
 ]
 
 async function pause(): Promise<void> {
-  await delay(2000)
+  await delay(1000)
 }
 
 export async function deletePlayer(id: string): Promise<void> {
