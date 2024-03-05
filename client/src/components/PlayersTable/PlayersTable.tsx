@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react'
 
 import { PER_PAGE, type Player } from '../../../../api'
 import {
-  PLAYERS_CHANNEL,
   createPlayerAction,
   deletePlayerAction,
   loadPlayersPageAction,
   playerCreatedAction,
   playerDeletedAction,
+  PLAYERS_CHANNEL,
   playersPageLoadedAction,
   updatePlayerAction
 } from '../../../../api/actions.js'
