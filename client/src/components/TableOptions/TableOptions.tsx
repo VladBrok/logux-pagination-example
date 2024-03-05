@@ -8,12 +8,12 @@ import styles from './TableOptions.module.css'
 
 export interface TableOptionsProps {
   isUpdating: boolean
-  onCreateNewPlayer: (player: Player) => void
+  onCreatePlayer: (player: Player) => void
 }
 
 export function TableOptions({
   isUpdating,
-  onCreateNewPlayer
+  onCreatePlayer
 }: TableOptionsProps): JSX.Element {
   const [newPlayerAdded, setNewPlayerAdded] = useState<Player>()
   const [newPlayerAddedShown, setNewPlayerAddedShown] = useState(false)
@@ -30,11 +30,11 @@ export function TableOptions({
     clearTimeout(addTimeoutId.current)
     addTimeoutId.current = setTimeout(() => {
       setNewPlayerAddedShown(false)
-    }, 2000)
+    }, 1500)
     setNewPlayerAdded(player)
     setNewPlayerAddedShown(true)
 
-    onCreateNewPlayer(player)
+    onCreatePlayer(player)
   }
 
   return (

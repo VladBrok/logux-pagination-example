@@ -32,16 +32,39 @@ export function PlayersTableRow({
     if (!editingPlayer) {
       return
     }
-
     onSaveEdit(editingPlayer)
     setEditingPlayer(undefined)
   }
 
+  const updateName = (name: string): void => {
+    if (!editingPlayer) {
+      return
+    }
+    setEditingPlayer({
+      ...editingPlayer,
+      name
+    })
+  }
+
+  const updateRank = (rank: string): void => {
+    if (!editingPlayer) {
+      return
+    }
+    setEditingPlayer({
+      ...editingPlayer,
+      rank: parseFloat(rank)
+    })
+  }
+
+  const isEditing = (): boolean => {
+    return editingPlayer?.id === player.id
+  }
+
   return (
     <>
-      <td className={styles.tableCell}>{player.id.slice(0, 6)}</td>
+      <td className={styles.tableCell}>{player.id.slice(0, 5)}</td>
       <td className={styles.tableCell}>
-        {editingPlayer?.id !== player.id && (
+        {!isEditing() && (
           <span
             className={cn(styles.cellData, {
               [styles.cellDataFaded]: isUpdating
@@ -50,22 +73,19 @@ export function PlayersTableRow({
             {player.name}
           </span>
         )}
-        {editingPlayer?.id === player.id && (
+        {isEditing() && (
           <input
             className={styles.input}
             onChange={e => {
-              setEditingPlayer({
-                ...editingPlayer,
-                name: e.target.value
-              })
+              updateName(e.target.value)
             }}
             type="text"
-            value={editingPlayer.name}
+            value={editingPlayer?.name}
           />
         )}
       </td>
       <td className={styles.tableCell}>
-        {editingPlayer?.id !== player.id && (
+        {!isEditing() && (
           <span
             className={cn(styles.cellData, {
               [styles.cellDataFaded]: isUpdating
@@ -74,17 +94,14 @@ export function PlayersTableRow({
             {player.rank}
           </span>
         )}
-        {editingPlayer?.id === player.id && (
+        {isEditing() && (
           <input
             className={styles.input}
             onChange={e => {
-              setEditingPlayer({
-                ...editingPlayer,
-                rank: parseFloat(e.target.value)
-              })
+              updateRank(e.target.value)
             }}
             type="number"
-            value={editingPlayer.rank}
+            value={editingPlayer?.rank}
           />
         )}
       </td>

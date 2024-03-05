@@ -3,16 +3,16 @@ import cn from 'classnames'
 import styles from './Pagination.module.css'
 
 export interface PaginationProps {
-  nextPage: () => void
+  onNextPage: () => void
+  onPrevPage: () => void
   page: number
-  prevPage: () => void
   totalPages: number
 }
 
 export function Pagination({
-  nextPage,
+  onNextPage,
+  onPrevPage,
   page,
-  prevPage,
   totalPages
 }: PaginationProps): JSX.Element {
   return (
@@ -20,7 +20,7 @@ export function Pagination({
       <button
         className={cn(styles.paginationButton, 'button')}
         disabled={page === 1}
-        onClick={prevPage}
+        onClick={onPrevPage}
         title="Go to previous page"
       >
         &lt;
@@ -31,7 +31,7 @@ export function Pagination({
       <button
         className={cn(styles.paginationButton, 'button')}
         disabled={page === totalPages}
-        onClick={nextPage}
+        onClick={onNextPage}
         title="Go to next page"
       >
         &gt;

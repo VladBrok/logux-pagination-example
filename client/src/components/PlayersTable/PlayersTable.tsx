@@ -159,7 +159,7 @@ export function PlayersTable(): JSX.Element {
   return (
     <div className={styles.content}>
       <h2 className={styles.tableTitle}>All Players</h2>
-      <TableOptions isUpdating={isUpdating} onCreateNewPlayer={createPlayer} />
+      <TableOptions isUpdating={isUpdating} onCreatePlayer={createPlayer} />
       <div>
         <div className={styles.tableWrapper}>
           {isLoadingPage && (
@@ -192,9 +192,9 @@ export function PlayersTable(): JSX.Element {
         </div>
 
         <Pagination
-          nextPage={nextPage}
+          onNextPage={nextPage}
+          onPrevPage={prevPage}
           page={page}
-          prevPage={prevPage}
           totalPages={totalPages}
         />
       </div>
