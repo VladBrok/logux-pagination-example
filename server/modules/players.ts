@@ -93,9 +93,6 @@ export default (server: BaseServer): void => {
           senderClientId: ctx.clientId
         })
       )
-    },
-    resend() {
-      return PLAYERS_CHANNEL
     }
   })
 
