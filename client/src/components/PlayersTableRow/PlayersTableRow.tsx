@@ -108,7 +108,7 @@ export function PlayersTableRow({
       <td className={cn(styles.tableCell, styles.tableOptionsCell)}>
         <div className={styles.rowOptionsWrapper}>
           <div className={styles.rowOptions}>
-            {editingPlayer?.id !== player.id && (
+            {!isEditing() && (
               <>
                 <button className={'button'} onClick={edit}>
                   Edit
@@ -118,7 +118,7 @@ export function PlayersTableRow({
                 </button>
               </>
             )}
-            {editingPlayer?.id === player.id && (
+            {isEditing() && (
               <>
                 <button className={'button'} onClick={saveEdit}>
                   Save
